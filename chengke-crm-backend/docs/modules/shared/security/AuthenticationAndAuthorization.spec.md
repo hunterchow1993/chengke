@@ -517,6 +517,7 @@
 
 | 版本 | 日期 | 说明 |
 | --- | --- | --- |
+| v1.4 | 2026-09-07 | 确认 JWT `iss=chengke-crm-auth`、`aud=chengke-crm-api`、`exp` 必须有效；资源服务器拒绝签发者或受众不匹配的 Token |
 | v1.4 | 2026-09-07 | 将 CSRF、HTTP Basic 和表单登录的禁用配置改为显式 lambda，消除 Spring Security `@NonNull` 方法引用警告；安全策略不变 |
 | v1.4 | 2026-09-07 | 为 `AuthSessionFilter` 重写的 `OncePerRequestFilter#doFilterInternal` 参数补充 Spring `@NonNull` 注解；不改变认证过滤行为 |
 | v1.4 | 2026-09-07 | 修复 Access Token 可管理部门 UUID 转字符串的方法引用 null 类型安全警告；保持 `manageable_department_ids` Claim 内容不变 |

@@ -13,8 +13,10 @@ mybatis:
 chengke:
   auth:
     jwt-secret: ${CHENGKE_AUTH_JWT_SECRET:chengke-local-hs256-secret-key-32bytes!}
-    access-ttl: 8h
-    remember-me-ttl: 7d
+    jwt-issuer: ${CHENGKE_AUTH_JWT_ISSUER:chengke-crm-auth}
+    jwt-audience: ${CHENGKE_AUTH_JWT_AUDIENCE:chengke-crm-api}
+    access-ttl: 1d
+    remember-me-ttl: 1d
     captcha-threshold: 5
     lock-threshold: 10
     failure-window: 15m

@@ -19,9 +19,11 @@ import java.util.UUID;
 @Component
 public class NimbusAccessTokenIssuer implements AccessTokenIssuer {
     private final JwtEncoder encoder;
+    private final AuthProperties properties;
 
-    public NimbusAccessTokenIssuer(JwtEncoder encoder) {
+    public NimbusAccessTokenIssuer(JwtEncoder encoder, AuthProperties properties) {
         this.encoder = encoder;
+        this.properties = properties;
     }
 
     @Override
@@ -32,6 +34,8 @@ public class NimbusAccessTokenIssuer implements AccessTokenIssuer {
         List<String> departmentIds = manageableDepartmentIds.stream().map(id -> id.toString()).toList();
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .id(sessionId.toString())
+                .issuer(properties.jwtIssuer())
+                .audience(List.of(properties.jwtAudience()))
                 .subject(userId.toString())
                 .issuedAt(now)
                 .expiresAt(expiresAt)

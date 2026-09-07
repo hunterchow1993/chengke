@@ -198,5 +198,5 @@ UPDATE sys_user
 | --- | --- | --- | --- |
 | P0 | Body 字段名；是否提交 `confirmPassword`、旧密码 | PRD 无接口字段表 | §2、§3 |
 | P0 | 成功响应是否复用登录五字段 | 前端编排改密后拉上下文 | §7 |
-| P1 | 新会话是否继承原 `rememberMe` | 7 天保持登录是否延续 | §5 |
+| P1 | 新会话是否继承原 `rememberMe` | 1 天保持登录是否延续 | §5 |
 | P1 | `forcePasswordChange` 已为 false 时的重复提交 | 幂等 | §5 |

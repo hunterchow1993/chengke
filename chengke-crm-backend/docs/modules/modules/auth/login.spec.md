@@ -64,7 +64,7 @@
 | --- | --- | --- | --- | --- | --- | --- |
 | `account` | string | Body | 是 | — | 去除首尾空格后非空；最大 32 字符；不自动改变字母大小写（登录 PRD §6.1） | 用户名或 11 位中国大陆手机号 |
 | `password` | string | Body | 是 | — | 8–32 字符；不 trim 内部空格；不自动格式化（登录 PRD §6.1） | 仅用于本次认证 |
-| `rememberMe` | boolean | Body | 是（登录 PRD §11.1） | UI 默认未选中（登录 PRD §6.1） | 布尔 | 是否申请最长 7 天保持登录 |
+| `rememberMe` | boolean | Body | 是（登录 PRD §11.1） | UI 默认未选中（登录 PRD §6.1） | 布尔 | 是否申请最长 1 天保持登录 |
 | `captchaCode` | string | Body | 条件必填 | — | 4–6 位；不区分大小写（登录 PRD §6.2） | 图形验证码 |
 | `captchaToken` | string | Body | 条件必填 | — | 服务端签发的一次性凭证 | 与验证码绑定 |
 | 租户 | UUID | 系统上下文 | 是（业务上） | — | 解析方式 **待确认**（总览 §18 P0-5） | 限定 `sys_user` 查询 |
@@ -122,7 +122,7 @@ IP 是否超过频率限制？是 → RATE_LIMITED，不创建会话（阈值待
 ↓
 角色是否有效？否 → ROLE_UNAVAILABLE，不创建会话，写失败审计
 ↓
-创建会话；rememberMe=true 时签发最长 7 天可撤销刷新凭证（总览 §5.4）
+创建会话；rememberMe=true 时签发最长 1 天可撤销刷新凭证（总览 §5.4）
 ↓
 清除当前账号连续失败计数（登录 PRD §9.1，已确认）
 ↓
@@ -149,7 +149,7 @@ IP 是否超过频率限制？是 → RATE_LIMITED，不创建会话（阈值待
 | `rememberMe` | 会话 |
 | --- | --- |
 | `false` | 常规会话；关闭浏览器后时长待确认（总览 §18 P0-10） |
-| `true` | 最长 7 天可撤销刷新凭证（登录 PRD §7.4） |
+| `true` | 最长 1 天可撤销刷新凭证（登录 PRD §7.4） |
 
 凭证放入 Cookie 还是别处：总览 §18 P0-2 投递方式已确认——访问令牌只出现在 JSON `data.accessToken`，后续请求使用 `Authorization: Bearer`。本接口不得在 JSON 中返回密码、哈希或完整刷新凭证（总览 §5.7）。
 
@@ -290,7 +290,7 @@ SELECT id, tenant_id, username, mobile, /* 密码凭据列 */, status,
 - [ ] 请求字段与 §3 / §4 一致；密码不出现在日志与响应中。
 - [ ] 用户名与手机号均可在凭据正确、账号正常、角色有效时 `success=true`。
 - [ ] 登录成功 `authContextRequired` 为 `true`；`forcePasswordChange` 与用户数据一致。
-- [ ] `rememberMe=true` 签发最长 7 天可撤销刷新凭证；`false` 为常规会话。
+- [ ] `rememberMe=true` 签发最长 1 天可撤销刷新凭证；`false` 为常规会话。
 - [ ] `INVALID_CREDENTIALS` 不区分账号是否存在。
 - [ ] `ACCOUNT_DISABLED` / `ROLE_UNAVAILABLE` 仅出现在密码通过之后，且不创建会话。
 - [ ] `requiresCaptcha` 与服务端风控状态一致，阈值来自后端配置而非前端写死。
