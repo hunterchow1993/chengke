@@ -54,12 +54,12 @@ public class AuthQueryService {
         List<MenuNodeResult> menus = MenuCatalog.forPermissions(new HashSet<>(permissions));
         String homeRoute = menus.stream()
                 .filter(node -> "page".equals(node.type()))
-                .map(MenuNodeResult::path)
+                .map(node -> node.path())
                 .findFirst()
                 .or(() -> menus.stream()
                         .flatMap(node -> node.children().stream())
                         .filter(child -> "page".equals(child.type()))
-                        .map(MenuNodeResult::path)
+                        .map(child -> child.path())
                         .findFirst())
                 .orElse("/app/dashboard");
         Map<String, String> dataScope = role.superAdmin() || actor.manageAllDepartments()
