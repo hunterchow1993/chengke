@@ -4,6 +4,7 @@ import com.chengke.chengkecrmbackend.modules.system.user.domain.policy.UserPolic
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.NonNull;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -28,7 +29,7 @@ public class UserModuleConfiguration {
      */
     @Bean(name = "userRequiresNewTransactionTemplate")
     @ConditionalOnBean(PlatformTransactionManager.class)
-    public TransactionTemplate userRequiresNewTransactionTemplate(PlatformTransactionManager transactionManager) {
+    public TransactionTemplate userRequiresNewTransactionTemplate(@NonNull PlatformTransactionManager transactionManager) {
         TransactionTemplate template = new TransactionTemplate(transactionManager);
         template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
         return template;

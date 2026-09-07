@@ -27,6 +27,8 @@ import com.chengke.chengkecrmbackend.shared.security.CurrentActor;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -104,16 +106,17 @@ public class UserCommandService {
     private static TransactionTemplate passthroughTemplate() {
         return new TransactionTemplate(new PlatformTransactionManager() {
             @Override
-            public TransactionStatus getTransaction(TransactionDefinition definition) {
+            @NonNull
+            public TransactionStatus getTransaction(@Nullable TransactionDefinition definition) {
                 return new SimpleTransactionStatus();
             }
 
             @Override
-            public void commit(TransactionStatus status) {
+            public void commit(@NonNull TransactionStatus status) {
             }
 
             @Override
-            public void rollback(TransactionStatus status) {
+            public void rollback(@NonNull TransactionStatus status) {
             }
         });
     }
@@ -245,7 +248,7 @@ public class UserCommandService {
             itemTransactions.executeWithoutResult(status -> eventPublisher.publish(new UserChangedEvent(
                     command.actor().tenantId(), null, "batch_disable", true, true)));
         }
-        int successCount = (int) results.stream().filter(BatchDisableResult.BatchDisableItemResult::success).count();
+        int successCount = (int) results.stream().filter(item -> item.success()).count();
         return new BatchDisableResult(command.userIds().size(), successCount,
                 command.userIds().size() - successCount, results);
     }

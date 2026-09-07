@@ -9,6 +9,7 @@ import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 仅在用户数据库事务提交后失效组织缓存，并在影响权限范围时提升租户授权版本。
@@ -41,7 +42,7 @@ public class UserAfterCommitListener {
             CacheManager cacheManager = cacheManagerProvider.getIfAvailable(
                     () -> { throw new IllegalStateException("CacheManager is required for user changes"); });
             for (String name : DEPARTMENT_CACHE_NAMES) {
-                var cache = cacheManager.getCache(name);
+                var cache = cacheManager.getCache(Objects.requireNonNull(name));
                 if (cache != null) {
                     cache.clear();
                 }

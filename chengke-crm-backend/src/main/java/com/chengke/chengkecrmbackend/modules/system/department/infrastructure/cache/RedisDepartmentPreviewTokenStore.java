@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -40,7 +41,8 @@ public class RedisDepartmentPreviewTokenStore implements DepartmentPreviewTokenS
             throw new IllegalArgumentException("preview binding already expired");
         }
         try {
-            redis.opsForValue().set(KEY_PREFIX + token, objectMapper.writeValueAsString(binding), ttl);
+            String serialized = Objects.requireNonNull(objectMapper.writeValueAsString(binding));
+            redis.opsForValue().set(KEY_PREFIX + token, serialized, ttl);
             return token;
         } catch (JsonProcessingException exception) {
             throw new IllegalStateException("cannot serialize department preview", exception);

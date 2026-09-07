@@ -13,6 +13,7 @@ import com.chengke.chengkecrmbackend.modules.system.department.domain.model.Depa
 import com.chengke.chengkecrmbackend.modules.system.department.domain.policy.DepartmentPolicy;
 import com.chengke.chengkecrmbackend.shared.security.CurrentActor;
 import org.junit.jupiter.api.Test;
+import org.springframework.lang.NonNull;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -203,7 +204,7 @@ class DepartmentCommandServiceTest {
         private final List<Object> events = new ArrayList<>();
 
         @Override
-        public void publish(Object event) {
+        public void publish(@NonNull Object event) {
             events.add(event);
         }
     }

@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
@@ -41,10 +40,10 @@ public class JwtResourceServerConfiguration {
             HttpSecurity http, ObjectProvider<JwtDecoder> jwtDecoder,
             ObjectProvider<AuthSessionFilter> authSessionFilter
     ) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
+        http.csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .httpBasic(AbstractHttpConfigurer::disable)
-                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(httpBasic -> httpBasic.disable())
+                .formLogin(formLogin -> formLogin.disable())
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
                                 "/v3/api-docs",

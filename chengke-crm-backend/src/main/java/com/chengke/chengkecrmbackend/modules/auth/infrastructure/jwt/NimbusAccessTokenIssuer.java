@@ -29,7 +29,7 @@ public class NimbusAccessTokenIssuer implements AccessTokenIssuer {
                         Collection<UUID> manageableDepartmentIds, boolean forcePasswordChange, Instant expiresAt,
                         String permissionVersion) {
         Instant now = Instant.now();
-        List<String> departmentIds = manageableDepartmentIds.stream().map(UUID::toString).toList();
+        List<String> departmentIds = manageableDepartmentIds.stream().map(id -> id.toString()).toList();
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .id(sessionId.toString())
                 .subject(userId.toString())

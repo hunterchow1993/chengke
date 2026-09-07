@@ -717,5 +717,11 @@ Schema：`chengke_crm`（沿用项目既有，已确认）。
 
 | 版本 | 日期 | 说明 |
 | --- | --- | --- |
+| v0.2 | 2026-09-07 | 为用户批量事务模板的 `PlatformTransactionManager` 注入参数补充非空契约，消除 `TransactionTemplate` 构造器的类型安全警告；事务传播行为不变 |
+| v0.2 | 2026-09-07 | 修复用户祖先部门人数统计中的 `UserSubtreeCount` 方法引用 null 类型安全警告；统计结果与重复键合并规则不变 |
+| v0.2 | 2026-09-07 | 明确用户变更监听器的部门缓存名称非空后再调用 Spring Cache API，消除 `@NonNull String` 类型安全警告；缓存失效范围不变 |
+| v0.2 | 2026-09-07 | 将用户变化事件发布端口的事件参数声明为非空，消除 Spring `ApplicationEventPublisher` 的 `@NonNull Object` 类型安全警告；事件发布行为不变 |
+| v0.2 | 2026-09-07 | 修复用户组织树与可见范围计算中的 `UserDepartmentRecord` 方法引用 null 类型安全警告；返回部门 ID 集合行为不变 |
+| v0.2 | 2026-09-07 | 补齐用户批量停用回退事务管理器的 Spring null 契约，并消除批量结果方法引用警告；用户写操作行为不变 |
 | v0.2 | 2026-09-04 | 按「一个 API 一个 Spec」重构：本文件改为模块总览（索引 + 共享规则），14 个 API 拆分为独立 Spec 文件；单 API 规则、决策表、SQL、验收与待确认项迁移至对应 API Spec |
 | v0.1 | 2026-09-04 | 基于用户管理模块 PRD v0.6、UI 设计 v0.10、角色管理 PRD v0.3、登录 PRD v0.3 与既有认证 / 部门 Spec 生成首版 Backend Spec；全部表结构与接口结构为待评审设计建议 |

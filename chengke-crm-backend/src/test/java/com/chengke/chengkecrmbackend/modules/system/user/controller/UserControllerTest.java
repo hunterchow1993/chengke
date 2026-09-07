@@ -12,6 +12,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.filter.RequestContextFilter;
 
+import java.util.Objects;
+
 import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -33,7 +35,7 @@ class UserControllerTest {
                 .build();
 
         mvc.perform(post("/api/v1/system/users/")
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(Objects.requireNonNull(MediaType.APPLICATION_JSON))
                         .content("{\"name\":\"A\",\"username\":\"1bad\",\"mobile\":\"123\",\"initialPassword\":\"x\"}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("USER_REQUEST_INVALID"))

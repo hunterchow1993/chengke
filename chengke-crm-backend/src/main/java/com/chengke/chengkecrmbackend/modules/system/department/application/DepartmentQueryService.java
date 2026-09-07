@@ -153,7 +153,7 @@ public class DepartmentQueryService {
     /** 计算可管理节点与其祖先组成的可见集合。 */
     private Set<UUID> visibleIds(CurrentActor actor, List<DepartmentRecord> all) {
         if (actor.manageAllDepartments()) {
-            return all.stream().map(DepartmentRecord::id).collect(java.util.stream.Collectors.toSet());
+            return all.stream().map(node -> node.id()).collect(java.util.stream.Collectors.toSet());
         }
         var byId = new HashMap<UUID, DepartmentRecord>();
         all.forEach(node -> byId.put(node.id(), node));

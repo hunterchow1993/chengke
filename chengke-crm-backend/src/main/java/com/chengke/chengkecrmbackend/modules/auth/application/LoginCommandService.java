@@ -100,10 +100,9 @@ public class LoginCommandService {
             }
         }
         AuthUserRecord user = uniqueUser(accountKey);
-        boolean passwordOk = user != null && passwordHasher.matches(command.password(), user.passwordHash());
 
         // 当密码错误时，增加失败计数并返回失败结果。若连续失败次数达到锁定阈值，则返回锁定提示。
-        if (!passwordOk) {
+        if (user == null || !passwordHasher.matches(command.password(), user.passwordHash())) {
             // 记录失败计数并返回失败结果
             FailureState next = incrementFailure(accountKey, now);
             persistence.insertAudit(user == null ? null : user.tenantId(), user == null ? null : user.id(),

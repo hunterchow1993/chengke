@@ -2,6 +2,7 @@ package com.chengke.chengkecrmbackend.modules.system.department.infrastructure.e
 
 import com.chengke.chengkecrmbackend.modules.system.department.application.port.DepartmentChangeEventPublisher;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 /**
@@ -18,7 +19,7 @@ public class SpringDepartmentChangeEventPublisher implements DepartmentChangeEve
 
     /** {@inheritDoc} */
     @Override
-    public void publish(Object event) {
+    public void publish(@NonNull Object event) {
         publisher.publishEvent(event);
     }
 }

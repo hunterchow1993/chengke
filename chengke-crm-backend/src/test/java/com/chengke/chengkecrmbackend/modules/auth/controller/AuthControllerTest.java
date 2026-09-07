@@ -12,6 +12,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.filter.RequestContextFilter;
 
+import java.util.Objects;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -29,7 +31,7 @@ class AuthControllerTest {
         MockMvc mvc = mvc(mock(LoginCommandService.class));
 
         mvc.perform(post("/api/v1/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(Objects.requireNonNull(MediaType.APPLICATION_JSON))
                         .content("{\"account\":\"\",\"password\":\"short\"}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("INVALID_REQUEST"))
@@ -43,7 +45,7 @@ class AuthControllerTest {
         MockMvc mvc = mvc(commandService);
 
         mvc.perform(post("/api/v1/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(Objects.requireNonNull(MediaType.APPLICATION_JSON))
                         .content("{\"account\":\"admin\",\"password\":\"WrongPass1\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value("OK"))

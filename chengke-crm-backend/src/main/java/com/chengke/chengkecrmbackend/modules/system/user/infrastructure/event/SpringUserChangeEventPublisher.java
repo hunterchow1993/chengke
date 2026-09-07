@@ -2,6 +2,7 @@ package com.chengke.chengkecrmbackend.modules.system.user.infrastructure.event;
 
 import com.chengke.chengkecrmbackend.modules.system.user.application.port.UserChangeEventPublisher;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 /**
@@ -18,7 +19,7 @@ public class SpringUserChangeEventPublisher implements UserChangeEventPublisher 
 
     /** {@inheritDoc} */
     @Override
-    public void publish(Object event) {
+    public void publish(@NonNull Object event) {
         publisher.publishEvent(event);
     }
 }

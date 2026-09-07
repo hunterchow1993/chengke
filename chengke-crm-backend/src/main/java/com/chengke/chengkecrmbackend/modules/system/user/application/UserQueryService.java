@@ -166,7 +166,7 @@ public class UserQueryService {
         }
         Set<UUID> childIds = all.stream()
                 .filter(node -> Objects.equals(node.parentId(), query.nodeId()) && visible.contains(node.id()))
-                .map(UserDepartmentRecord::id)
+                .map(node -> node.id())
                 .collect(Collectors.toSet());
         return toOrgNodes(query.actor(), all, visible, childIds);
     }
@@ -265,7 +265,7 @@ public class UserQueryService {
     /** 计算可管理部门及其祖先组成的可见集合。 */
     private Set<UUID> visibleIds(CurrentActor actor, List<UserDepartmentRecord> all) {
         if (actor.manageAllDepartments()) {
-            return all.stream().map(UserDepartmentRecord::id).collect(Collectors.toSet());
+            return all.stream().map(node -> node.id()).collect(Collectors.toSet());
         }
         Map<UUID, UserDepartmentRecord> byId = indexById(all);
         Set<UUID> visible = new HashSet<>();

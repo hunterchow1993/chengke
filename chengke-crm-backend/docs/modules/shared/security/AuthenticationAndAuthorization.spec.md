@@ -517,6 +517,9 @@
 
 | 版本 | 日期 | 说明 |
 | --- | --- | --- |
+| v1.4 | 2026-09-07 | 将 CSRF、HTTP Basic 和表单登录的禁用配置改为显式 lambda，消除 Spring Security `@NonNull` 方法引用警告；安全策略不变 |
+| v1.4 | 2026-09-07 | 为 `AuthSessionFilter` 重写的 `OncePerRequestFilter#doFilterInternal` 参数补充 Spring `@NonNull` 注解；不改变认证过滤行为 |
+| v1.4 | 2026-09-07 | 修复 Access Token 可管理部门 UUID 转字符串的方法引用 null 类型安全警告；保持 `manageable_department_ids` Claim 内容不变 |
 | v1.4 | 2026-09-05 | 登录总览确认访问令牌投递为 `Authorization: Bearer`，本模块资源服务器与此对齐 |
 | v1.2 | 2026-09-05 | 文档交叉引用登录与会话认证 Spec：明确本模块仍不签发 Token；公开登录路径尚未进入当前白名单。不改变资源服务器代码行为。 |
 | v1.1 | 2026-09-05 | 本地无 JwtDecoder 时文档白名单仍可匿名访问；关闭默认 `/login` 表单，避免 Swagger 被拦。兼容：白名单新增精确路径 `/v3/api-docs`、`/swagger-ui.html`；受保护 API 未认证从 302 变为 401。无需数据库迁移。测试：`PublicApiDocumentationSecurityTest` |

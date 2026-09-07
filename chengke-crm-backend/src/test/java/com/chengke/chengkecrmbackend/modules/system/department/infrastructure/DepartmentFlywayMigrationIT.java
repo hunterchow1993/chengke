@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DepartmentFlywayMigrationIT {
 
     @Container
+    @SuppressWarnings("resource")
     private static final PostgreSQLContainer<?> POSTGRES =
             new PostgreSQLContainer<>("postgres:16-alpine").withDatabaseName("chengke_crm");
 

@@ -1053,6 +1053,10 @@ GET tree
 
 | 版本 | 日期 | 说明 |
 | --- | --- | --- |
+| v2.0 | 2026-09-07 | 将部门变化事件发布端口的事件参数声明为非空，消除 Spring `ApplicationEventPublisher` 的 `@NonNull Object` 类型安全警告；事件发布行为不变 |
+| v2.0 | 2026-09-07 | 明确部门缓存名称非空后再调用 Spring Cache API，消除 `@NonNull String` 类型安全警告；缓存失效范围不变 |
+| v2.0 | 2026-09-07 | 明确部门预览令牌 JSON 序列化结果为非空后再写入 Redis，消除 `@NonNull String` 类型安全警告；缓存协议不变 |
+| v2.0 | 2026-09-07 | 修复部门可见范围计算中的 `DepartmentRecord` 方法引用 null 类型安全警告；保持可见部门 ID 集合行为不变 |
 | v1.0 | 2026-09-02 | 首版业务 Spec |
 | v2.0 | 2026-09-03 | 按 Backend Spec 全量模板重构：补 JSON/SQL 示例、调用链、缓存、实现问题与 P0/P1/P2 待确认 |
 

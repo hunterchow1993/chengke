@@ -6,7 +6,6 @@ import com.chengke.chengkecrmbackend.modules.system.user.application.port.model.
 import com.chengke.chengkecrmbackend.modules.system.user.application.port.model.UserDepartmentRecord;
 import com.chengke.chengkecrmbackend.modules.system.user.application.port.model.UserInsert;
 import com.chengke.chengkecrmbackend.modules.system.user.application.port.model.UserRecord;
-import com.chengke.chengkecrmbackend.modules.system.user.application.port.model.UserSubtreeCount;
 import com.chengke.chengkecrmbackend.modules.system.user.domain.model.UserStatus;
 import com.chengke.chengkecrmbackend.modules.system.user.infrastructure.persistence.UserDatabaseExceptionTranslator;
 import com.chengke.chengkecrmbackend.modules.system.user.infrastructure.persistence.dataobject.UserDO;
@@ -175,7 +174,7 @@ public class MyBatisUserRepository implements UserPersistencePort {
         }
         return queryMapper.countUsersByAncestor(tenantId, ancestorIds, manageableDepartmentIds, manageAll)
                 .stream()
-                .collect(Collectors.toMap(UserSubtreeCount::nodeId, UserSubtreeCount::userCount, (a, b) -> a));
+            .collect(Collectors.toMap(item -> item.nodeId(), item -> item.userCount(), (a, b) -> a));
     }
 
     @Override

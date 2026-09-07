@@ -20,6 +20,8 @@ import com.chengke.chengkecrmbackend.modules.system.user.domain.model.UserStatus
 import com.chengke.chengkecrmbackend.modules.system.user.domain.policy.UserPolicy;
 import com.chengke.chengkecrmbackend.shared.security.CurrentActor;
 import org.junit.jupiter.api.Test;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -128,7 +130,7 @@ class UserApplicationServiceTest {
         assertThat(result.results().getFirst().errorCode()).isEqualTo("USER_SELF_DISABLE_FORBIDDEN");
         assertThat(persistence.users.get(other).status()).isEqualTo(UserStatus.DISABLED);
         assertThat(persistence.users.get(ACTOR_ID).status()).isEqualTo(UserStatus.ACTIVE);
-        assertThat(events.events).extracting(UserChangedEvent::action).containsExactly("disable", "batch_disable");
+        assertThat(events.events).extracting(event -> event.action()).containsExactly("disable", "batch_disable");
     }
 
     @Test
@@ -235,16 +237,17 @@ class UserApplicationServiceTest {
     private static TransactionTemplate passthroughTemplate() {
         return new TransactionTemplate(new PlatformTransactionManager() {
             @Override
-            public TransactionStatus getTransaction(TransactionDefinition definition) {
+            @NonNull
+            public TransactionStatus getTransaction(@Nullable TransactionDefinition definition) {
                 return new SimpleTransactionStatus();
             }
 
             @Override
-            public void commit(TransactionStatus status) {
+            public void commit(@NonNull TransactionStatus status) {
             }
 
             @Override
-            public void rollback(TransactionStatus status) {
+            public void rollback(@NonNull TransactionStatus status) {
             }
         });
     }
@@ -268,7 +271,7 @@ class UserApplicationServiceTest {
         private final List<UserChangedEvent> events = new ArrayList<>();
 
         @Override
-        public void publish(Object event) {
+        public void publish(@NonNull Object event) {
             events.add((UserChangedEvent) event);
         }
     }
@@ -438,7 +441,7 @@ class UserApplicationServiceTest {
 
         @Override
         public Optional<UUID> findDepartmentIdByUserId(UUID tenantId, UUID userId) {
-            return Optional.ofNullable(users.get(userId)).map(UserRecord::departmentId);
+            return Optional.ofNullable(users.get(userId)).map(user -> user.departmentId());
         }
 
         @Override
