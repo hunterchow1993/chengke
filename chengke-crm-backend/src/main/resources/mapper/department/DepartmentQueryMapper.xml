@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chengke.chengkecrmbackend.modules.system.department.infrastructure.persistence.mapper.DepartmentQueryMapper">
+
+    <resultMap id="departmentMap" type="com.chengke.chengkecrmbackend.modules.system.department.infrastructure.persistence.dataobject.DepartmentDO">
+        <id property="id" column="id"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="name" column="name"/>
+        <result property="code" column="code"/>
+        <result property="nodeType" column="node_type"/>
+        <result property="leaderUserId" column="leader_user_id"/>
+        <result property="sortOrder" column="sort_order"/>
+        <result property="status" column="status"/>
+        <result property="remark" column="remark"/>
+        <result property="depth" column="depth"/>
+        <result property="version" column="version"/>
+        <result property="updatedBy" column="updated_by"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="columns">id, tenant_id, parent_id, name, code, node_type, leader_user_id,
+        sort_order, status, remark, depth, version, updated_by, created_at, updated_at</sql>
+
+    <select id="selectById" resultMap="departmentMap">
+        SELECT <include refid="columns"/>
+        FROM chengke_crm.department
+        WHERE tenant_id = #{tenantId} AND id = #{departmentId} AND deleted_at IS NULL
+    </select>
+
+    <select id="selectAll" resultMap="departmentMap">
+        SELECT <include refid="columns"/>
+        FROM chengke_crm.department
+        WHERE tenant_id = #{tenantId} AND deleted_at IS NULL
+        ORDER BY path_ids, sort_order, created_at, id
+    </select>
+
+    <select id="selectLeaderCandidates" resultType="com.chengke.chengkecrmbackend.modules.system.department.application.port.model.DepartmentLeaderCandidate">
+        SELECT u.id AS user_id,
+               u.name AS display_name,
+               u.username,
+               u.avatar_url,
+               d.name AS department_path
+        FROM chengke_crm.sys_user u
+        LEFT JOIN chengke_crm.department d
+          ON d.tenant_id = u.tenant_id AND d.id = u.department_id AND d.deleted_at IS NULL
+        WHERE u.tenant_id = #{tenantId}
+          AND u.status = 'active'
+          AND (#{keyword,jdbcType=VARCHAR} IS NULL OR #{keyword,jdbcType=VARCHAR} = ''
+               OR u.name ILIKE concat('%', #{keyword}, '%')
+               OR u.username ILIKE concat('%', #{keyword}, '%'))
+        ORDER BY u.name, u.id
+    </select>
+
+    <select id="selectPath" resultType="com.chengke.chengkecrmbackend.modules.system.department.application.port.model.DepartmentPathItem">
+        SELECT a.id, a.name, a.depth
+        FROM chengke_crm.department_closure c
+        JOIN chengke_crm.department a ON a.tenant_id = c.tenant_id AND a.id = c.ancestor_id
+        WHERE c.tenant_id = #{tenantId} AND c.descendant_id = #{departmentId} AND a.deleted_at IS NULL
+        ORDER BY c.distance DESC
+    </select>
+
+    <select id="countImpact" resultType="com.chengke.chengkecrmbackend.modules.system.department.application.port.model.DepartmentImpactCounts">
+        SELECT
+          (SELECT count(*) FROM chengke_crm.department_closure c
+           JOIN chengke_crm.department d ON d.tenant_id=c.tenant_id AND d.id=c.descendant_id
+           WHERE c.tenant_id=#{tenantId} AND c.ancestor_id=#{departmentId}
+             AND c.distance&gt;0 AND d.deleted_at IS NULL)::integer AS descendant_count,
+          count(*) FILTER (WHERE r.reference_type='user')::integer AS direct_member_count,
+          count(*) FILTER (WHERE r.reference_type='role')::integer AS role_reference_count,
+          count(*) FILTER (WHERE r.protected AND r.reference_type NOT IN ('user','role'))::integer AS business_reference_count,
+          false AS has_hidden_references
+        FROM chengke_crm.department_reference r
+        WHERE r.tenant_id=#{tenantId} AND r.department_id=#{departmentId}
+    </select>
+
+    <select id="isDescendant" resultType="boolean">
+        SELECT EXISTS(
+          SELECT 1 FROM chengke_crm.department_closure
+          WHERE tenant_id=#{tenantId} AND ancestor_id=#{ancestorId}
+            AND descendant_id=#{descendantId} AND distance&gt;0
+        )
+    </select>
+
+    <select id="subtreeHeight" resultType="int">
+        SELECT coalesce(max(distance), 0) FROM chengke_crm.department_closure
+        WHERE tenant_id=#{tenantId} AND ancestor_id=#{departmentId}
+    </select>
+
+    <select id="hasDisabledAncestor" resultType="boolean">
+        SELECT EXISTS(
+          SELECT 1 FROM chengke_crm.department_closure c
+          JOIN chengke_crm.department a ON a.tenant_id=c.tenant_id AND a.id=c.ancestor_id
+          WHERE c.tenant_id=#{tenantId} AND c.descendant_id=#{departmentId}
+            AND c.distance&gt;0 AND a.deleted_at IS NULL AND a.status='disabled'
+        )
+    </select>
+</mapper>

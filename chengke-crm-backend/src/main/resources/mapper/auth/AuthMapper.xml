@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chengke.chengkecrmbackend.modules.auth.infrastructure.persistence.mapper.AuthMapper">
+
+    <resultMap id="userMap" type="com.chengke.chengkecrmbackend.modules.auth.infrastructure.persistence.dataobject.AuthUserDO">
+        <id property="id" column="id"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="name" column="name"/>
+        <result property="username" column="username"/>
+        <result property="mobile" column="mobile"/>
+        <result property="avatarUrl" column="avatar_url"/>
+        <result property="passwordHash" column="password_hash"/>
+        <result property="status" column="status"/>
+        <result property="forcePasswordChange" column="force_password_change"/>
+        <result property="roleId" column="role_id"/>
+        <result property="departmentId" column="department_id"/>
+    </resultMap>
+
+    <sql id="userColumns">
+        id, tenant_id, name, username, mobile, avatar_url, password_hash, status,
+        force_password_change, role_id, department_id
+    </sql>
+
+    <select id="findByUsername" resultMap="userMap">
+        SELECT <include refid="userColumns"/>
+        FROM chengke_crm.sys_user
+        WHERE lower(username) = lower(#{username})
+    </select>
+
+    <select id="findByMobile" resultMap="userMap">
+        SELECT <include refid="userColumns"/>
+        FROM chengke_crm.sys_user
+        WHERE mobile = #{mobile}
+    </select>
+
+    <select id="findUser" resultMap="userMap">
+        SELECT <include refid="userColumns"/>
+        FROM chengke_crm.sys_user
+        WHERE tenant_id = #{tenantId} AND id = #{userId}
+    </select>
+
+    <select id="findRole" resultType="com.chengke.chengkecrmbackend.modules.auth.application.port.model.AuthRoleRecord">
+        SELECT id, name, code, status, built_in AS builtIn
+        FROM chengke_crm.sys_role
+        WHERE tenant_id = #{tenantId} AND id = #{roleId}
+    </select>
+
+    <update id="updatePassword">
+        UPDATE chengke_crm.sys_user
+        SET password_hash = #{passwordHash},
+            force_password_change = #{forcePasswordChange},
+            updated_at = clock_timestamp(),
+            updated_by = #{actorId}
+        WHERE tenant_id = #{tenantId} AND id = #{userId}
+    </update>
+
+    <select id="failureState" resultType="com.chengke.chengkecrmbackend.modules.auth.application.port.model.FailureState">
+        SELECT fail_count AS failCount, window_started_at AS windowStartedAt, locked_until AS lockedUntil
+        FROM chengke_crm.auth_login_failure
+        WHERE account_key = #{accountKey}
+    </select>
+
+    <insert id="upsertFailure">
+        INSERT INTO chengke_crm.auth_login_failure (account_key, fail_count, window_started_at, locked_until)
+        VALUES (#{accountKey}, #{failCount}, #{windowStartedAt}, #{lockedUntil})
+        ON CONFLICT (account_key) DO UPDATE SET
+            fail_count = EXCLUDED.fail_count,
+            window_started_at = EXCLUDED.window_started_at,
+            locked_until = EXCLUDED.locked_until
+    </insert>
+
+    <delete id="clearFailure">
+        DELETE FROM chengke_crm.auth_login_failure WHERE account_key = #{accountKey}
+    </delete>
+
+    <insert id="insertCaptcha">
+        INSERT INTO chengke_crm.auth_captcha (token, code_hash, expires_at)
+        VALUES (#{token}, #{codeHash}, #{expiresAt})
+    </insert>
+
+    <select id="consumeCaptcha" resultType="string">
+        UPDATE chengke_crm.auth_captcha
+        SET consumed_at = #{now}
+        WHERE token = #{token}
+          AND consumed_at IS NULL
+          AND expires_at &gt; #{now}
+        RETURNING code_hash
+    </select>
+
+    <insert id="insertSession">
+        INSERT INTO chengke_crm.auth_session (id, tenant_id, user_id, remember_me, expires_at)
+        VALUES (#{id}, #{tenantId}, #{userId}, #{rememberMe}, #{expiresAt})
+    </insert>
+
+    <update id="revokeSession">
+        UPDATE chengke_crm.auth_session
+        SET revoked_at = #{now}
+        WHERE id = #{sessionId} AND revoked_at IS NULL
+    </update>
+
+    <update id="revokeUserSessions">
+        UPDATE chengke_crm.auth_session
+        SET revoked_at = #{now}
+        WHERE tenant_id = #{tenantId}
+          AND user_id = #{userId}
+          AND revoked_at IS NULL
+        <if test="keepSessionId != null">
+            AND id &lt;&gt; #{keepSessionId}
+        </if>
+    </update>
+
+    <select id="countActiveSession" resultType="int">
+        SELECT count(*)
+        FROM chengke_crm.auth_session
+        WHERE id = #{sessionId}
+          AND revoked_at IS NULL
+          AND expires_at &gt; #{now}
+    </select>
+
+    <select id="findActiveSession"
+            resultType="com.chengke.chengkecrmbackend.modules.auth.application.port.model.AuthSessionRecord">
+        SELECT id, tenant_id AS tenantId, user_id AS userId, expires_at AS expiresAt
+        FROM chengke_crm.auth_session
+        WHERE id = #{sessionId}
+          AND revoked_at IS NULL
+          AND expires_at &gt; #{now}
+    </select>
+
+    <insert id="insertAudit">
+        INSERT INTO chengke_crm.auth_login_audit (
+            tenant_id, user_id, account_key, result, error_code, ip, user_agent,
+            session_created, session_revoked
+        ) VALUES (
+            #{tenantId}, #{userId}, #{accountKey}, #{result}, #{errorCode}, #{ip}, #{userAgent},
+            #{sessionCreated}, #{sessionRevoked}
+        )
+    </insert>
+</mapper>

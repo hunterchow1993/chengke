@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chengke.chengkecrmbackend.modules.system.department.infrastructure.persistence.mapper.DepartmentCommandMapper">
+    <select id="createDepartment" resultType="java.util.UUID">
+        SELECT chengke_crm.create_department(
+          #{tenantId}, #{parentId,jdbcType=OTHER}, #{name}, #{code}, #{nodeType},
+          #{leaderUserId,jdbcType=OTHER}, #{sortOrder}, #{status}, #{remark,jdbcType=VARCHAR}, #{actorId}
+        )
+    </select>
+
+    <select id="updateDepartment" resultType="int">
+        SELECT chengke_crm.update_department(
+          #{tenantId}, #{departmentId}, #{name}, #{leaderUserId,jdbcType=OTHER}, #{sortOrder},
+          #{remark,jdbcType=VARCHAR}, #{version}, #{actorId}, #{reason,jdbcType=VARCHAR}
+        )
+    </select>
+
+    <select id="moveDepartment" resultType="int">
+        SELECT chengke_crm.move_department(
+          #{tenantId}, #{departmentId}, #{newParentId}, #{version}, #{actorId}, #{reason,jdbcType=VARCHAR}
+        )
+    </select>
+
+    <select id="changeDepartmentStatus" resultType="int">
+        SELECT chengke_crm.set_department_status(
+          #{tenantId}, #{departmentId}, #{status}, #{cascade}, #{version}, #{actorId}, #{reason,jdbcType=VARCHAR}
+        )
+    </select>
+
+    <select id="softDeleteDepartment" resultType="int">
+        SELECT chengke_crm.soft_delete_department(
+          #{tenantId}, #{departmentId}, #{version}, #{actorId}, #{reason,jdbcType=VARCHAR}
+        )
+    </select>
+</mapper>

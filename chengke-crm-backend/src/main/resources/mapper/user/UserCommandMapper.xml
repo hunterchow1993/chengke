@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chengke.chengkecrmbackend.modules.system.user.infrastructure.persistence.mapper.UserCommandMapper">
+
+    <insert id="insertUser">
+        INSERT INTO chengke_crm.sys_user (
+            id, tenant_id, name, username, password_hash, avatar_url, mobile, email,
+            department_id, role_id, status, force_password_change, remark,
+            version, created_by, updated_by
+        ) VALUES (
+            #{id}, #{tenantId}, #{name}, #{username}, #{passwordHash}, #{avatarUrl}, #{mobile}, #{email},
+            #{departmentId}, #{roleId}, #{status}, #{forcePasswordChange}, #{remark},
+            1, #{actorId}, #{actorId}
+        )
+    </insert>
+
+    <update id="updateUser">
+        UPDATE chengke_crm.sys_user
+        SET name = #{name},
+            avatar_url = #{avatarUrl},
+            mobile = #{mobile},
+            email = #{email},
+            department_id = #{departmentId},
+            role_id = #{roleId},
+            status = #{status},
+            remark = #{remark},
+            version = version + 1,
+            updated_by = #{actorId},
+            updated_at = clock_timestamp()
+        WHERE tenant_id = #{tenantId} AND id = #{userId} AND version = #{version}
+    </update>
+
+    <update id="updateStatus">
+        UPDATE chengke_crm.sys_user
+        SET status = #{status},
+            version = version + 1,
+            updated_by = #{actorId},
+            updated_at = clock_timestamp()
+        WHERE tenant_id = #{tenantId} AND id = #{userId}
+    </update>
+
+    <update id="updatePassword">
+        UPDATE chengke_crm.sys_user
+        SET password_hash = #{passwordHash},
+            force_password_change = #{forcePasswordChange},
+            version = version + 1,
+            updated_by = #{actorId},
+            updated_at = clock_timestamp()
+        WHERE tenant_id = #{tenantId} AND id = #{userId}
+    </update>
+
+    <insert id="insertAudit">
+        INSERT INTO chengke_crm.user_audit_log (
+            tenant_id, user_id, action, actor_id, result, before_data, after_data
+        ) VALUES (
+            #{tenantId}, #{userId}, #{action}, #{actorId}, #{result},
+            CAST(#{beforeData,jdbcType=VARCHAR} AS jsonb),
+            CAST(#{afterData,jdbcType=VARCHAR} AS jsonb)
+        )
+    </insert>
+
+    <select id="registerDepartmentReference">
+        SELECT chengke_crm.register_department_reference(
+            #{tenantId}, #{departmentId}, 'user', #{userId}::text, true, '{}'::jsonb)
+    </select>
+
+    <select id="unregisterDepartmentReference" resultType="boolean">
+        SELECT chengke_crm.unregister_department_reference(
+            #{tenantId}, #{departmentId}, 'user', #{userId}::text)
+    </select>
+</mapper>

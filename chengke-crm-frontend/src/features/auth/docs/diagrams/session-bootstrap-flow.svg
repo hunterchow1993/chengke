@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="827" viewBox="0 0 1200 827" role="img" aria-labelledby="title desc">
+  <title id="title">澄客 CRM 刷新页面与会话恢复流程</title>
+  <desc id="desc">进入管理端后请求授权上下文，成功则渲染管理端，401 时单飞刷新 Token 并重试一次，失败则清理会话并返回登录页。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#697786" /></marker>
+    <marker id="arrow-ok" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#3F6F58" /></marker>
+    <marker id="arrow-warn" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#916A2E" /></marker>
+    <marker id="arrow-bad" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#B14F4F" /></marker>
+    <style>
+      .title{font:700 24px Inter,"PingFang SC","Microsoft YaHei",sans-serif;fill:#1F2D3D}.label{font:600 14px Inter,"PingFang SC","Microsoft YaHei",sans-serif;fill:#1F2D3D;text-anchor:middle}.small{font:500 13px Inter,"PingFang SC","Microsoft YaHei",sans-serif;fill:#1F2D3D;text-anchor:middle}.edge{fill:none;stroke:#697786;stroke-width:2;marker-end:url(#arrow)}.ok{fill:none;stroke:#3F6F58;stroke-width:2;marker-end:url(#arrow-ok)}.warn{fill:none;stroke:#916A2E;stroke-width:2;marker-end:url(#arrow-warn)}.bad{fill:none;stroke:#B14F4F;stroke-width:2;marker-end:url(#arrow-bad)}.edge-label{font:600 13px Inter,"PingFang SC",sans-serif}.process{fill:#EAF0F5;stroke:#4E6F91;stroke-width:2}.success{fill:#E8F2EC;stroke:#3F6F58;stroke-width:2}.warning{fill:#F8F0DF;stroke:#916A2E;stroke-width:2}.error{fill:#F8E9E9;stroke:#B14F4F;stroke-width:2}
+    </style>
+  </defs>
+  <rect width="1200" height="827" fill="#F7F9FB" />
+  <text x="600" y="48" class="title" text-anchor="middle">澄客 CRM 刷新页面与会话恢复流程</text>
+
+  <ellipse cx="85" cy="180" rx="65" ry="30" class="success" /><text x="85" y="185" class="label">进入 /app</text>
+  <rect x="190" y="145" width="175" height="70" rx="8" class="process" /><text x="278" y="175" class="small"><tspan x="278">SessionBoundary</tspan><tspan x="278" dy="20">status = loading</tspan></text>
+  <rect x="405" y="150" width="195" height="60" rx="8" class="process" /><text x="503" y="185" class="small">GET /auth/context</text>
+  <polygon points="705,130 780,180 705,230 630,180" class="warning" /><text x="705" y="185" class="label">响应结果？</text>
+
+  <rect x="820" y="95" width="190" height="70" rx="8" class="process" /><text x="915" y="125" class="small"><tspan x="915">applyAuthContext</tspan><tspan x="915" dy="20">写入 Redux</tspan></text>
+  <ellipse cx="1105" cy="130" rx="65" ry="30" class="success" /><text x="1105" y="135" class="small">渲染管理端</text>
+
+  <rect x="610" y="300" width="190" height="70" rx="8" class="process" /><text x="705" y="330" class="small"><tspan x="705">refreshSessionOnce</tspan><tspan x="705" dy="20">POST /auth/refresh</tspan></text>
+  <polygon points="705,410 780,460 705,510 630,460" class="warning" /><text x="705" y="465" class="label">刷新成功？</text>
+  <rect x="350" y="425" width="210" height="70" rx="8" class="error" /><text x="455" y="455" class="small"><tspan x="455">清除内存 Token</tspan><tspan x="455" dy="20">applyAnonymousSession</tspan></text>
+  <rect x="840" y="430" width="150" height="60" rx="8" class="process" /><text x="915" y="455" class="small"><tspan x="915">新 Token</tspan><tspan x="915" dy="20">写入内存</tspan></text>
+  <rect x="825" y="550" width="165" height="70" rx="8" class="process" /><text x="908" y="580" class="small"><tspan x="908">重试 context</tspan><tspan x="908" dy="20">仅一次</tspan></text>
+  <polygon points="915,670 990,720 915,770 840,720" class="warning" /><text x="915" y="725" class="label">重试成功？</text>
+  <ellipse cx="455" cy="600" rx="85" ry="30" class="error" /><text x="455" y="605" class="label">跳转 /login</text>
+
+  <path d="M150 180 H188" class="edge" /><path d="M365 180 H403" class="edge" /><path d="M600 180 H628" class="edge" />
+  <path d="M705 130 V80 H800 V130 H818" class="ok" /><text x="720" y="118" class="edge-label" fill="#3F6F58">200</text>
+  <path d="M1010 130 H1038" class="ok" />
+  <path d="M705 230 V298" class="warn" /><text x="718" y="268" class="edge-label" fill="#916A2E">401</text>
+  <path d="M630 180 H585 V270 H455 V423" class="bad" /><text x="505" y="258" class="edge-label" fill="#B14F4F">其他错误</text>
+  <path d="M705 370 V408" class="edge" />
+  <path d="M630 460 H562" class="bad" /><text x="590" y="448" class="edge-label" fill="#B14F4F">否</text>
+  <path d="M780 460 H838" class="ok" /><text x="805" y="448" class="edge-label" fill="#3F6F58">是</text>
+  <path d="M915 490 V548" class="edge" /><path d="M908 620 V665 H915 V668" class="edge" />
+  <path d="M840 720 H600 V460 H562" class="bad" /><text x="785" y="708" class="edge-label" fill="#B14F4F">否</text>
+  <path d="M990 720 H1180 V250 H915 V167" class="ok" /><text x="1015" y="708" class="edge-label" fill="#3F6F58">是</text>
+  <path d="M455 495 V568" class="bad" />
+</svg>

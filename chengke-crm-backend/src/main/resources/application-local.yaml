@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: ${CHENGKE_DB_URL:jdbc:postgresql://localhost:5432/chengke_crm}
+    username: ${CHENGKE_DB_USERNAME:chengke_app}
+    password: ${CHENGKE_DB_PASSWORD:Root123}
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+# 仅本地排查：打印 Mapper SQL、绑定参数和影响行数。
+logging:
+  level:
+    com.chengke.chengkecrmbackend.modules.system.user.infrastructure.persistence.mapper: debug
+    com.chengke.chengkecrmbackend.modules.system.department.infrastructure.persistence.mapper: debug
+    com.chengke.chengkecrmbackend.modules.auth.infrastructure.persistence.mapper: debug

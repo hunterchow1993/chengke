@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: chengke-crm-backend
+  flyway:
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    baseline-version: 0
+mybatis:
+  mapper-locations: classpath*:mapper/**/*.xml
+  type-handlers-package: com.chengke.chengkecrmbackend.shared.persistence
+  configuration:
+    map-underscore-to-camel-case: true
+chengke:
+  auth:
+    jwt-secret: ${CHENGKE_AUTH_JWT_SECRET:chengke-local-hs256-secret-key-32bytes!}
+    access-ttl: 8h
+    remember-me-ttl: 7d
+    captcha-threshold: 5
+    lock-threshold: 10
+    failure-window: 15m
+    lock-duration: 30m
